@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Мой план тренировок</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #f7f5f0;
+  --surface:   #ffffff;
+  --card:      #fdfcf9;
+  --border:    #e8e2d6;
+  --border2:   #d4ccba;
+  --text:      #2a2520;
+  --text2:     #5a5248;
+  --muted:     #9e9488;
+  --olive:     #7a8c5e;
+  --olive-lt:  #eef1e8;
+  --olive-md:  #c8d4b4;
+  --orange:    #c96a2a;
+  --orange-lt: #fdf0e6;
+  --orange-md: #f0c898;
+  --accent:    #7a8c5e;
+  --green:     #5e8c6e;
+  --green-lt:  #e8f2ec;
+  --tr-a:      #c96a2a;
+  --tr-b:      #7a8c5e;
+  --tr-c:      #8c7a5e;
+  --shadow:    0 2px 12px rgba(42,37,32,0.07);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+/* HEADER */
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 36px 20px 24px;
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content:''; position:absolute; top:-60px; right:-40px;
+  width:200px; height:200px; border-radius:50%;
+  background:radial-gradient(circle,rgba(201,106,42,0.08) 0%,transparent 70%);
+}
+.header-eyebrow {
+  font-size:11px; letter-spacing:3px; text-transform:uppercase;
+  color:var(--olive); font-weight:500; margin-bottom:8px;
+}
+.header-title {
+  font-family:'Fraunces',serif; font-size:28px; font-weight:700;
+  color:var(--text); line-height:1.15;
+}
+.header-date-row {
+  display:flex; align-items:center; gap:10px;
+  margin-top:14px; background:var(--bg);
+  border:1px solid var(--border); border-radius:12px; padding:10px 14px;
+}
+.date-label { font-size:13px; color:var(--muted); white-space:nowrap; }
+.date-input {
+  border:none; background:none; font-family:'DM Sans',sans-serif;
+  font-size:15px; color:var(--text); font-weight:500; outline:none;
+  flex:1; cursor:pointer;
+}
+
+/* TABS */
+.tabs {
+  display:flex; background:var(--surface);
+  border-bottom:2px solid var(--border);
+  position:sticky; top:0; z-index:100;
+  box-shadow:0 2px 8px rgba(42,37,32,0.05);
+}
+.tab {
+  flex:1; padding:15px 6px 13px; text-align:center;
+  font-size:14px; font-weight:500; color:var(--muted); cursor:pointer;
+  border-bottom:3px solid transparent; margin-bottom:-2px; transition:all 0.2s;
+}
+.tab.active { color:var(--text); }
+.tab-a.active { border-bottom-color:var(--tr-a); }
+.tab-b.active { border-bottom-color:var(--tr-b); }
+.tab-c.active { border-bottom-color:var(--tr-c); }
+.tab-dot {
+  display:inline-block; width:8px; height:8px; border-radius:50%;
+  margin-right:6px; vertical-align:middle; opacity:0.5;
+}
+.tab.active .tab-dot { opacity:1; }
+.dot-a{background:var(--tr-a);} .dot-b{background:var(--tr-b);} .dot-c{background:var(--tr-c);}
+
+/* SECTIONS */
+.section { display:none; padding:20px 16px 0; }
+.section.active { display:block; }
+
+/* WORKOUT HEADER */
+.workout-header {
+  display:flex; align-items:center; gap:14px;
+  margin-bottom:20px; padding:18px 20px;
+  background:var(--surface); border-radius:18px;
+  border:1px solid var(--border); box-shadow:var(--shadow);
+}
+.workout-badge {
+  width:48px; height:48px; border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Fraunces',serif; font-size:22px; font-weight:700; flex-shrink:0;
+}
+.badge-a{background:var(--orange-lt);color:var(--tr-a);}
+.badge-b{background:var(--olive-lt);color:var(--tr-b);}
+.badge-c{background:#f5f0e8;color:var(--tr-c);}
+.workout-title { font-family:'Fraunces',serif; font-size:18px; font-weight:600; line-height:1.25; }
+.workout-focus { font-size:13px; color:var(--muted); margin-top:3px; }
+
+/* PROGRESS */
+.progress-wrap {
+  background:var(--surface); border-radius:14px; border:1px solid var(--border);
+  padding:16px 18px; margin-bottom:20px; box-shadow:var(--shadow);
+}
+.progress-label { font-size:12px; color:var(--muted); margin-bottom:10px; letter-spacing:0.5px; font-weight:500; }
+.progress-row { display:flex; align-items:center; gap:12px; }
+.progress-bg { flex:1; background:var(--border); border-radius:6px; height:6px; overflow:hidden; }
+.progress-fill { height:100%; border-radius:6px; transition:width 0.4s ease; }
+.fill-a{background:linear-gradient(90deg,var(--orange-md),var(--tr-a));}
+.fill-b{background:linear-gradient(90deg,var(--olive-md),var(--tr-b));}
+.fill-c{background:linear-gradient(90deg,#d4c4a0,var(--tr-c));}
+.progress-count { font-size:13px; font-weight:500; color:var(--text2); min-width:40px; text-align:right; }
+
+/* BLOCK LABEL */
+.block-label {
+  font-size:11px; letter-spacing:2px; text-transform:uppercase;
+  color:var(--muted); margin:22px 0 10px 2px; font-weight:500;
+}
+
+/* EXERCISE */
+.exercise {
+  background:var(--surface); border-radius:16px; border:1px solid var(--border);
+  margin-bottom:10px; overflow:hidden; box-shadow:var(--shadow); transition:border-color 0.2s;
+}
+.exercise.done-state { border-color:var(--green); background:var(--green-lt); }
+.exercise-main { display:flex; align-items:flex-start; padding:16px 16px 14px; gap:12px; }
+.exercise-info { flex:1; min-width:0; }
+.exercise-name { font-size:15px; font-weight:500; color:var(--text); line-height:1.35; }
+.sets-row { display:flex; flex-wrap:wrap; gap:6px; margin-top:9px; }
+.set-chip {
+  background:var(--bg); border:1px solid var(--border2); border-radius:8px;
+  padding:4px 11px; font-size:13px; color:var(--text2);
+}
+.done-btn {
+  width:30px; height:30px; border-radius:50%; border:2px solid var(--border2);
+  background:none; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  color:var(--muted); flex-shrink:0; margin-top:2px; transition:all 0.2s;
+  font-size:14px; font-weight:600;
+}
+.done-btn.checked { background:var(--green); border-color:var(--green); color:white; }
+
+/* TRAINER NOTE */
+.trainer-note {
+  background:var(--orange-lt); border-top:1px solid var(--orange-md);
+  padding:11px 16px; font-size:14px; color:var(--orange);
+  display:flex; gap:9px; align-items:flex-start; line-height:1.5;
+}
+
+/* MY NOTES */
+.my-note-area { border-top:1px solid var(--border); padding:12px 16px; background:#fafaf7; }
+.my-note-label { font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:7px; font-weight:500; }
+.my-note-input {
+  width:100%; background:none; border:none; outline:none; color:var(--text);
+  font-family:'DM Sans',sans-serif; font-size:14px; resize:none; min-height:40px; line-height:1.6;
+}
+.my-note-input::placeholder { color:var(--muted); font-style:italic; }
+
+/* RATING SECTION */
+.rating-section {
+  background:var(--surface); border-radius:18px; border:1px solid var(--border);
+  padding:22px 20px; margin-top:28px; box-shadow:var(--shadow);
+}
+.rating-title { font-family:'Fraunces',serif; font-size:18px; font-weight:600; color:var(--text); margin-bottom:6px; }
+.rating-subtitle { font-size:14px; color:var(--text2); margin-bottom:14px; }
+.rating-scale { display:flex; gap:5px; margin-bottom:8px; }
+.rating-btn {
+  flex:1; height:44px; border-radius:10px; border:1.5px solid var(--border2);
+  background:var(--bg); font-size:15px; font-weight:500; color:var(--text2);
+  cursor:pointer; transition:all 0.15s; font-family:'DM Sans',sans-serif;
+}
+.rating-btn.sel-low { background:var(--green-lt); border-color:var(--green); color:var(--green); }
+.rating-btn.sel-mid { background:var(--olive-lt); border-color:var(--olive); color:var(--olive); }
+.rating-btn.sel-high { background:var(--orange-lt); border-color:var(--orange); color:var(--orange); }
+.rating-btn.sel-max { background:#fde8e8; border-color:#c43030; color:#c43030; }
+.rating-hint { display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:22px; }
+
+.feedback-field { margin-bottom:14px; }
+.feedback-label { font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin-bottom:7px; font-weight:500; display:block; }
+.feedback-input {
+  width:100%; background:var(--bg); border:1.5px solid var(--border);
+  border-radius:12px; padding:12px 14px; font-family:'DM Sans',sans-serif;
+  font-size:14px; color:var(--text); outline:none; resize:none; min-height:70px;
+  line-height:1.6; transition:border-color 0.2s;
+}
+.feedback-input:focus { border-color:var(--accent); }
+.feedback-input::placeholder { color:var(--muted); font-style:italic; }
+
+/* SEND BUTTON */
+.send-btn {
+  width:100%; padding:16px; border-radius:14px; border:none;
+  font-family:'DM Sans',sans-serif; font-size:15px; font-weight:500;
+  cursor:pointer; margin-top:6px; transition:all 0.2s;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.send-btn-a{background:var(--tr-a);color:white;}
+.send-btn-b{background:var(--tr-b);color:white;}
+.send-btn-c{background:var(--tr-c);color:white;}
+.send-btn:hover { opacity:0.9; transform:translateY(-1px); box-shadow:0 4px 16px rgba(0,0,0,0.12); }
+.send-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+.success-msg {
+  display:none; background:var(--green-lt); border:1px solid var(--green);
+  border-radius:12px; padding:14px 16px; font-size:14px; color:var(--green);
+  margin-top:12px; text-align:center; font-weight:500;
+}
+.notice-box {
+  display:none; background:var(--olive-lt); border:1px solid var(--olive-md);
+  border-radius:12px; padding:14px 16px; font-size:13px; color:var(--text2);
+  margin-top:10px; line-height:1.7;
+}
+.notice-box strong { font-weight:600; color:var(--olive); }
+.notice-box ol { margin:8px 0 0 18px; }
+.notice-box li { margin-bottom:4px; }
+.notice-box code {
+  background:rgba(122,140,94,0.1); border-radius:4px;
+  padding:1px 5px; font-family:monospace; font-size:12px; color:var(--olive);
+}
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+.section.active > * { animation:fadeUp 0.3s ease both; }
+.section.active > *:nth-child(1){animation-delay:0.02s;}
+.section.active > *:nth-child(2){animation-delay:0.05s;}
+.section.active > *:nth-child(3){animation-delay:0.08s;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-eyebrow">Мой план тренировок</div>
+  <div class="header-title">План · 12.04</div>
+  <div class="header-date-row">
+    <span class="date-label">📅 Дата тренировки:</span>
+    <input type="date" class="date-input" id="training-date">
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab tab-a active" onclick="switchTab('a')"><span class="tab-dot dot-a"></span>TR A</div>
+  <div class="tab tab-b" onclick="switchTab('b')"><span class="tab-dot dot-b"></span>TR B</div>
+  <div class="tab tab-c" onclick="switchTab('c')"><span class="tab-dot dot-c"></span>TR C</div>
+</div>
+
+<!-- ═══════════════ TR A ═══════════════ -->
+<div id="section-a" class="section active">
+  <div class="workout-header">
+    <div class="workout-badge badge-a">A</div>
+    <div><div class="workout-title">Ягодицы + Ноги + Пресс</div><div class="workout-focus">Силовой блок · Кардио · Кор</div></div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-label">Выполнено упражнений</div>
+    <div class="progress-row"><div class="progress-bg"><div class="progress-fill fill-a" id="fill-a" style="width:0%"></div></div><div class="progress-count" id="count-a">0 / 8</div></div>
+  </div>
+
+  <div class="block-label">💪 Силовой блок</div>
+  <div class="exercise" id="ex-a1">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Ягодичный мостик в тренажере</div><div class="sets-row"><div class="set-chip">7.5 × 10 повт.</div><div class="set-chip">7.5 × 10 повт.</div><div class="set-chip">7.5 × 10 повт.</div></div></div><button class="done-btn" onclick="toggleDone(this,'a','ex-a1')">✓</button></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Как прошло, самочувствие…" rows="2"></textarea></div>
+  </div>
+  <div class="exercise" id="ex-a2">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Жим ногами в тренажёре <span style="color:var(--tr-a);font-size:13px">(жопный акцент)</span></div><div class="sets-row"><div class="set-chip">25 кг × 12</div><div class="set-chip">25 кг × 12</div><div class="set-chip">25 кг × 12</div><div class="set-chip">25 кг × 12</div></div></div><button class="done-btn" onclick="toggleDone(this,'a','ex-a2')">✓</button></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Как прошло…" rows="2"></textarea></div>
+  </div>
+  <div class="exercise" id="ex-a3">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Отведение бедра в тренажёре</div><div class="sets-row"><div class="set-chip">25 кг × 20</div><div class="set-chip">25 кг × 20</div><div class="set-chip">25 кг × 20</div></div></div><button class="done-btn" onclick="toggleDone(this,'a','ex-a3')">✓</button></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Как прошло…" rows="2"></textarea></div>
+  </div>
+  <div class="exercise" id="ex-a4">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Махи ногой назад в тренажере</div><div class="sets-row"><div class="set-chip">15 кг × 10</div><div class="set-chip">15 кг × 10</div><div class="set-chip">15 кг × 10</div></div></div><button class="done-btn" onclick="toggleDone(this,'a','ex-a4')">✓</button></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Как прошло…" rows="2"></textarea></div>
+  </div>
+
+  <div class="block-label">🧘 Пресс + кор</div>
+  <div class="exercise" id="ex-a5">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Планка</div><div class="sets-row"><div class="set-chip">60 сек</div><div class="set-chip">60 сек</div><div class="set-chip">60 сек</div></div></div><button class="done-btn" onclick="toggleDone(this,'a','ex-a5')">✓</button></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Как прошло…" rows="2"></textarea></div>
+  </div>
+  <div class="exercise" id="ex-a6">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Скручивания на полу</div><div class="sets-row"><div class="set-chip">15 раз</div><div class="set-chip">15 раз</div><div class="set-chip">15 раз</div></div></div><button class="done-btn" onclick="toggleDone(this,'a','ex-a6')">✓</button></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Как прошло…" rows="2"></textarea></div>
+  </div>
+  <div class="exercise" id="ex-a7">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Dead Bug на BOSU</div><div class="sets-row"><div class="set-chip">10 / сторону</div><div class="set-chip">10 / сторону</div><div class="set-chip">10 / сторону</div></div></div><button class="done-btn" onclick="toggleDone(this,'a','ex-a7')">✓</button></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Как прошло…" rows="2"></textarea></div>
+  </div>
+
+  <div class="block-label">🚣 Кардио</div>
+  <div class="exercise" id="ex-a8">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Гребля (эргометр)</div><div class="sets-row"><div class="set-chip">20 мин</div></div></div><button class="done-btn" onclick="toggleDone(this,'a','ex-a8')">✓</button></div>
+    <div class="trainer-note"><span>✏️</span><span>Поменяла местами — делать после силового блока</span></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Темп, ощущения…" rows="2"></textarea></div>
+  </div>
+
+  <div class="rating-section">
+    <div class="rating-title">Как прошла тренировка?</div>
+    <div class="rating-subtitle">Оцени сложность от 1 до 10</div>
+    <div class="rating-scale" id="scale-a"></div>
+    <div class="rating-hint"><span>😌 Легко</span><span>🔥 Очень тяжело</span></div>
+    <div class="feedback-field"><label class="feedback-label">Что было самым сложным</label><textarea class="feedback-input" id="hard-a" placeholder="Например: планка, жим ногами…" rows="2"></textarea></div>
+    <div class="feedback-field"><label class="feedback-label">Что было самым лёгким</label><textarea class="feedback-input" id="easy-a" placeholder="Например: скручивания, гребля…" rows="2"></textarea></div>
+    <div class="feedback-field"><label class="feedback-label">Особые замечания</label><textarea class="feedback-input" id="notes-a" placeholder="Боль, усталость, настроение…" rows="2"></textarea></div>
+    <button class="send-btn send-btn-a" id="sendbtn-a" onclick="sendReport('a')">📊 Перенести в основной отчёт</button>
+    <div class="success-msg" id="success-a">✅ Отчёт успешно отправлен в таблицу!</div>
+    <div class="notice-box" id="notice-a"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ TR B ═══════════════ -->
+<div id="section-b" class="section">
+  <div class="workout-header">
+    <div class="workout-badge badge-b">B</div>
+    <div><div class="workout-title">Верх + Баланс</div><div class="workout-focus">Тяги · Жимы · Плечи · Кор</div></div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-label">Выполнено упражнений</div>
+    <div class="progress-row"><div class="progress-bg"><div class="progress-fill fill-b" id="fill-b" style="width:0%"></div></div><div class="progress-count" id="count-b">0 / 10</div></div>
+  </div>
+
+  <div class="block-label">🏋️ Тяги и жимы</div>
+  <div class="exercise" id="ex-b1">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Тяга верхнего блока к груди</div><div class="sets-row"><div class="set-chip">25 кг × 15</div><div class="set-chip">25 кг × 15</div><div class="set-chip">25 кг × 15</div></div></div><button class="done-btn" onclick="toggleDone(this,'b','ex-b1')">✓</button></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Как прошло…" rows="2"></textarea></div>
+  </div>
+  <div class="exercise" id="ex-b2">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Тяга нижнего блока</div><div class="sets-row"><div class="set-chip">25 кг × 10</div><div class="set-chip">25 кг × 10</div><div class="set-chip">25 кг × 10</div></div></div><button class="done-btn" onclick="toggleDone(this,'b','ex-b2')">✓</button></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Как прошло…" rows="2"></textarea></div>
+  </div>
+  <div class="exercise" id="ex-b3">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Обратные махи (30°)</div><div class="sets-row"><div class="set-chip">2 кг × 15</div><div class="set-chip">2 кг × 15</div><div class="set-chip">2 кг × 15</div></div></div><button class="done-btn" onclick="toggleDone(this,'b','ex-b3')">✓</button></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Как прошло…" rows="2"></textarea></div>
+  </div>
+  <div class="exercise" id="ex-b4">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Жим лёжа 30°</div><div class="sets-row"><div class="set-chip">20 кг × 10</div><div class="set-chip">20 кг × 10</div><div class="set-chip">20 кг × 10</div></div></div><button class="done-btn" onclick="toggleDone(this,'b','ex-b4')">✓</button></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Как прошло…" rows="2"></textarea></div>
+  </div>
+
+  <div class="block-label">💫 Плечи</div>
+  <div class="exercise" id="ex-b5">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Махи в стороны</div><div class="sets-row"><div class="set-chip">3 кг × 15</div><div class="set-chip">3 кг × 15</div><div class="set-chip">3 кг × 15</div></div></div><button class="done-btn" onclick="toggleDone(this,'b','ex-b5')">✓</button></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Как прошло…" rows="2"></textarea></div>
+  </div>
+  <div class="exercise" id="ex-b6">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Махи перед собой</div><div class="sets-row"><div class="set-chip">5 кг × 10</div><div class="set-chip">5 кг × 10</div><div class="set-chip">5 кг × 10</div></div></div><button class="done-btn" onclick="toggleDone(this,'b','ex-b6')">✓</button></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Как прошло…" rows="2"></textarea></div>
+  </div>
+
+  <div class="block-label">💪 Бицепс + Трицепс</div>
+  <div class="exercise" id="ex-b7">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Сгибание рук на бицепс сидя с разворотом</div><div class="sets-row"><div class="set-chip">4 кг × 10</div><div class="set-chip">4 кг × 10</div><div class="set-chip">4 кг × 10</div></div></div><button class="done-btn" onclick="toggleDone(this,'b','ex-b7')">✓</button></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Как прошло…" rows="2"></textarea></div>
+  </div>
+  <div class="exercise" id="ex-b8">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Разгибание рук на трицепс с косичкой</div><div class="sets-row"><div class="set-chip">7.5 кг × 12</div><div class="set-chip">7.5 кг × 12</div><div class="set-chip">7.5 кг × 12</div></div></div><button class="done-btn" onclick="toggleDone(this,'b','ex-b8')">✓</button></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Как прошло…" rows="2"></textarea></div>
+  </div>
+
+  <div class="block-label">🧘 Баланс + кор</div>
+  <div class="exercise" id="ex-b9">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Copenhagen Plank</div><div class="sets-row"><div class="set-chip">20 сек / сторону</div><div class="set-chip">20 сек / сторону</div><div class="set-chip">20 сек / сторону</div></div></div><button class="done-btn" onclick="toggleDone(this,'b','ex-b9')">✓</button></div>
+    <div class="trainer-note"><span>✏️</span><span>Не ной — ноги тоже надо! Это важно для стабильности таза</span></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Как прошло…" rows="2"></textarea></div>
+  </div>
+
+  <div class="block-label">🏃 Кардио</div>
+  <div class="exercise" id="ex-b10">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Эллипс</div><div class="sets-row"><div class="set-chip">20 мин</div></div></div><button class="done-btn" onclick="toggleDone(this,'b','ex-b10')">✓</button></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Темп, ощущения…" rows="2"></textarea></div>
+  </div>
+
+  <div class="rating-section">
+    <div class="rating-title">Как прошла тренировка?</div>
+    <div class="rating-subtitle">Оцени сложность от 1 до 10</div>
+    <div class="rating-scale" id="scale-b"></div>
+    <div class="rating-hint"><span>😌 Легко</span><span>🔥 Очень тяжело</span></div>
+    <div class="feedback-field"><label class="feedback-label">Что было самым сложным</label><textarea class="feedback-input" id="hard-b" placeholder="Например: Copenhagen Plank…" rows="2"></textarea></div>
+    <div class="feedback-field"><label class="feedback-label">Что было самым лёгким</label><textarea class="feedback-input" id="easy-b" placeholder="Например: махи в стороны…" rows="2"></textarea></div>
+    <div class="feedback-field"><label class="feedback-label">Особые замечания</label><textarea class="feedback-input" id="notes-b" placeholder="Боль, усталость, настроение…" rows="2"></textarea></div>
+    <button class="send-btn send-btn-b" id="sendbtn-b" onclick="sendReport('b')">📊 Перенести в основной отчёт</button>
+    <div class="success-msg" id="success-b">✅ Отчёт успешно отправлен в таблицу!</div>
+    <div class="notice-box" id="notice-b"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ TR C ═══════════════ -->
+<div id="section-c" class="section">
+  <div class="workout-header">
+    <div class="workout-badge badge-c">C</div>
+    <div><div class="workout-title">Ягодицы + Ноги + Поясница</div><div class="workout-focus">Глубокая работа · Статика</div></div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-label">Выполнено упражнений</div>
+    <div class="progress-row"><div class="progress-bg"><div class="progress-fill fill-c" id="fill-c" style="width:0%"></div></div><div class="progress-count" id="count-c">0 / 8</div></div>
+  </div>
+
+  <div class="block-label">🍑 Ягодицы</div>
+  <div class="exercise" id="ex-c1">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Ягодичный мостик в тренажере</div><div class="sets-row"><div class="set-chip">5 кг × 20</div><div class="set-chip">5 кг × 20</div></div></div><button class="done-btn" onclick="toggleDone(this,'c','ex-c1')">✓</button></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Как прошло…" rows="2"></textarea></div>
+  </div>
+  <div class="exercise" id="ex-c2">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">ГЭ — 2 сек пауза наверху <span style="color:var(--tr-c);font-size:13px">(акцент на ягодицы)</span></div><div class="sets-row"><div class="set-chip">2.5 кг × 12</div><div class="set-chip">2.5 кг × 12</div><div class="set-chip">2.5 кг × 12</div></div></div><button class="done-btn" onclick="toggleDone(this,'c','ex-c2')">✓</button></div>
+    <div class="trainer-note"><span>✏️</span><span>Делай до дискомфорта — терпи паузу наверху, это важно</span></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Как прошло…" rows="2"></textarea></div>
+  </div>
+
+  <div class="block-label">🦵 Ноги</div>
+  <div class="exercise" id="ex-c3">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Присед с гантелью (Goblet Squat) — опускание 3 сек</div><div class="sets-row"><div class="set-chip">12 кг × 15</div><div class="set-chip">12 кг × 15</div><div class="set-chip">12 кг × 15</div></div></div><button class="done-btn" onclick="toggleDone(this,'c','ex-c3')">✓</button></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Как прошло…" rows="2"></textarea></div>
+  </div>
+  <div class="exercise" id="ex-c4">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Отведение бедра в тренажёре</div><div class="sets-row"><div class="set-chip">30 кг × 15</div><div class="set-chip">30 кг × 15</div><div class="set-chip">30 кг × 15</div></div></div><button class="done-btn" onclick="toggleDone(this,'c','ex-c4')">✓</button></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Как прошло…" rows="2"></textarea></div>
+  </div>
+
+  <div class="block-label">🦴 Поясница</div>
+  <div class="exercise" id="ex-c5">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Поясница + ягодица — подъёмы + статика, короткая амплитуда</div><div class="sets-row"><div class="set-chip">10 + 30 сек × 5 кг</div><div class="set-chip">10 + 30 сек × 5 кг</div></div></div><button class="done-btn" onclick="toggleDone(this,'c','ex-c5')">✓</button></div>
+    <div class="trainer-note"><span>✏️</span><span>На 3-м подходе — пробуй делать, прислушивайся к пояснице</span></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Ощущения в пояснице…" rows="2"></textarea></div>
+  </div>
+  <div class="exercise" id="ex-c6">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Подъём ног на пресс в тренажере</div><div class="sets-row"><div class="set-chip">15 раз</div><div class="set-chip">15 раз</div><div class="set-chip">15 раз</div></div></div><button class="done-btn" onclick="toggleDone(this,'c','ex-c6')">✓</button></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Как прошло…" rows="2"></textarea></div>
+  </div>
+
+  <div class="block-label">🏃 Кардио</div>
+  <div class="exercise" id="ex-c7">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Эллипс</div><div class="sets-row"><div class="set-chip">20 мин</div></div></div><button class="done-btn" onclick="toggleDone(this,'c','ex-c7')">✓</button></div>
+    <div class="trainer-note"><span>✏️</span><span>Эксперименты полегче — сильный перепад в последнем отчёте</span></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Темп, ощущения…" rows="2"></textarea></div>
+  </div>
+
+  <div class="block-label">🤸 Растяжка</div>
+  <div class="exercise" id="ex-c8">
+    <div class="exercise-main"><div class="exercise-info"><div class="exercise-name">Растяжка</div><div class="sets-row"><div class="set-chip">20 мин</div></div></div><button class="done-btn" onclick="toggleDone(this,'c','ex-c8')">✓</button></div>
+    <div class="trainer-note"><span>✏️</span><span>Очень пристрастная — не пропускай! После таких нагрузок обязательно</span></div>
+    <div class="my-note-area"><div class="my-note-label">Мои заметки</div><textarea class="my-note-input" placeholder="Что делала, ощущения…" rows="2"></textarea></div>
+  </div>
+
+  <div class="rating-section">
+    <div class="rating-title">Как прошла тренировка?</div>
+    <div class="rating-subtitle">Оцени сложность от 1 до 10</div>
+    <div class="rating-scale" id="scale-c"></div>
+    <div class="rating-hint"><span>😌 Легко</span><span>🔥 Очень тяжело</span></div>
+    <div class="feedback-field"><label class="feedback-label">Что было самым сложным</label><textarea class="feedback-input" id="hard-c" placeholder="Например: статика в пояснице…" rows="2"></textarea></div>
+    <div class="feedback-field"><label class="feedback-label">Что было самым лёгким</label><textarea class="feedback-input" id="easy-c" placeholder="Например: эллипс, растяжка…" rows="2"></textarea></div>
+    <div class="feedback-field"><label class="feedback-label">Особые замечания</label><textarea class="feedback-input" id="notes-c" placeholder="Боль, усталость, настроение…" rows="2"></textarea></div>
+    <button class="send-btn send-btn-c" id="sendbtn-c" onclick="sendReport('c')">📊 Перенести в основной отчёт</button>
+    <div class="success-msg" id="success-c">✅ Отчёт успешно отправлен в таблицу!</div>
+    <div class="notice-box" id="notice-c"></div>
+  </div>
+</div>
+
+<script>
+// ─── ВСТАВЬ СЮДА СВОЙ URL ПОСЛЕ НАСТРОЙКИ APPS SCRIPT ───
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxpYsP3B2OTKBsiL-XjQRDdw-BgA0H4OLQz_HKToQA0arn7HBnT6hXzByt6HJLdEt-iTQ/exec';
+
+const totals = { a: 8, b: 10, c: 8 };
+const ratings = { a: null, b: null, c: null };
+
+// Дата не заполняется автоматически — пользователь выбирает сам
+
+// Создаём шкалы оценки
+['a','b','c'].forEach(g => {
+  const el = document.getElementById('scale-' + g);
+  for (let i = 1; i <= 10; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'rating-btn';
+    btn.textContent = i;
+    btn.onclick = () => selectRating(g, i, btn);
+    el.appendChild(btn);
+  }
+});
+
+function selectRating(group, val, clickedBtn) {
+  ratings[group] = val;
+  document.querySelectorAll('#scale-' + group + ' .rating-btn').forEach(b => {
+    b.className = 'rating-btn';
+  });
+  const cls = val <= 3 ? 'sel-low' : val <= 6 ? 'sel-mid' : val <= 8 ? 'sel-high' : 'sel-max';
+  clickedBtn.classList.add(cls);
+}
+
+function toggleDone(btn, group, exId) {
+  btn.classList.toggle('checked');
+  const card = document.getElementById(exId);
+  card.classList.toggle('done-state', btn.classList.contains('checked'));
+  updateProgress(group);
+}
+
+function updateProgress(group) {
+  const section = document.getElementById('section-' + group);
+  const done = section.querySelectorAll('.done-btn.checked').length;
+  const total = totals[group];
+  document.getElementById('fill-' + group).style.width = Math.round(done/total*100) + '%';
+  document.getElementById('count-' + group).textContent = done + ' / ' + total;
+}
+
+function switchTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  document.querySelectorAll('.tab')[['a','b','c'].indexOf(id)].classList.add('active');
+}
+
+function collectNotes(group) {
+  return [...document.getElementById('section-'+group).querySelectorAll('.exercise')].map(ex => ({
+    name: ex.querySelector('.exercise-name').textContent.trim(),
+    done: ex.querySelector('.done-btn').classList.contains('checked'),
+    note: ex.querySelector('.my-note-input').value.trim()
+  }));
+}
+
+async function sendReport(group) {
+  const btn = document.getElementById('sendbtn-' + group);
+  const successEl = document.getElementById('success-' + group);
+  const noticeEl = document.getElementById('notice-' + group);
+
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === '') {
+    noticeEl.style.display = 'block';
+    noticeEl.innerHTML = `<strong>⚙️ Нужно один раз настроить Apps Script:</strong>
+    <ol>
+      <li>Открой свою таблицу Google → <strong>Расширения → Apps Script</strong></li>
+      <li>Вставь код ниже, нажми <strong>Сохранить</strong></li>
+      <li>Нажми <strong>Развернуть → Новое развёртывание</strong></li>
+      <li>Выбери тип: <strong>Веб-приложение</strong>, доступ: <strong>Все</strong></li>
+      <li>Скопируй полученный URL и вставь его в файл вместо <code>https://script.google.com/macros/s/AKfycbxpYsP3B2OTKBsiL-XjQRDdw-BgA0H4OLQz_HKToQA0arn7HBnT6hXzByt6HJLdEt-iTQ/exec</code></li>
+    </ol>
+    <br><strong>Код для Apps Script:</strong><br>
+    <code style="display:block;margin-top:6px;padding:8px;background:rgba(0,0,0,0.05);border-radius:8px;font-size:11px;line-height:1.6;white-space:pre-wrap">function doPost(e) {
+  const data = JSON.parse(e.postData.contents);
+  const ss = SpreadsheetApp.openById('1XQwjpIuBhjbagChtB8zh9Dqd0kp1XRBnjN1Y233Q-xo');
+  const sheet = ss.getSheetByName('Отчёты') || ss.insertSheet('Отчёты');
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(['Дата','Тренировка','Оценка сложности','Самое сложное','Самое лёгкое','Замечания','Выполнено упражнений','Заметки по упражнениям']);
+  }
+  const notes = data.exercises.map(e => (e.done?'✓':'✗')+' '+e.name+(e.note?' — '+e.note:'')).join('\n');
+  const done = data.exercises.filter(e=>e.done).length + '/' + data.exercises.length;
+  sheet.appendRow([data.date, data.workout, data.rating||'—', data.hard||'—', data.easy||'—', data.notes||'—', done, notes]);
+  return ContentService.createTextOutput('ok');
+}</code>`;
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Отправка…';
+  const payload = {
+    workout: 'TR ' + group.toUpperCase(),
+    date: document.getElementById('training-date').value,
+    rating: ratings[group],
+    hard: document.getElementById('hard-' + group).value,
+    easy: document.getElementById('easy-' + group).value,
+    notes: document.getElementById('notes-' + group).value,
+    exercises: collectNotes(group)
+  };
+  try {
+    await fetch(APPS_SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+    successEl.style.display = 'block';
+    btn.textContent = '✅ Отправлено!';
+  } catch(err) {
+    btn.disabled = false;
+    btn.textContent = '📊 Перенести в основной отчёт';
+    noticeEl.style.display = 'block';
+    noticeEl.innerHTML = '<strong>Ошибка отправки.</strong> Проверь интернет-соединение.';
+  }
+}
+</script>
+</body>
+</html>
